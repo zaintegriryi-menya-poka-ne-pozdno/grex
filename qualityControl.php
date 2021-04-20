@@ -3,9 +3,9 @@
 header('Access-Control-Allow-Origin: *');
 header('Content-type: application/json');
 
-header('Content-Security-Policy: upgrade-insecure-requests'); 
+header('Content-Security-Policy: upgrade-insecure-requests');
 header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Max-Age: 86400'); 
+header('Access-Control-Max-Age: 86400');
 header('Access-Control-Allow-Methods: POST, GET, DELETE, PUT, PATCH, OPTIONS');
 
 $host_db= 'localhost';
@@ -19,31 +19,25 @@ date_default_timezone_set("Asia/Krasnoyarsk");
 
 if(isset($_POST)){
   $prep_date = date("Y-m-d H:i:s");
-  var_dump($_POST);
   switch(@$_POST['action']){
     case 'get_qc_fields': {
       $res = $mysqli_req->query("SELECT * FROM quality_control");
       $item = $res->fetch_all(MYSQLI_ASSOC);
-      $nota = 0; $repa = 0;
-        var_dump($res);
+      $nota = 0;
+      $repa = 0;
       if($notice = $mysqli_req->query("SELECT `notice` FROM leads WHERE `id_lead` = '$_POST[card_id]'"))
         {
-            var_dump($notice);
-            var_dump("notice");
         $nota = 1;
         $notice_array = $notice->fetch_all(MYSQLI_ASSOC); 
         @$notice_array = $notice_array[0]['notice'];
         }
       if($report = $mysqli_req->query("SELECT `report` FROM leads WHERE `id_lead` = '$_POST[card_id]'"))
         {
-            var_dump($report);
-            var_dump("report");
         $repa = 1;
         $report_array = $report->fetch_all(MYSQLI_ASSOC); 
         @$report_array = $report_array[0]['report'];
         }
       if($nota || $repa) {
-          var_dump("nota || repa");
           $notice_push = (object)array('notice' => $notice_array != null ? $notice_array : "", 'report' => $report_array != null ? $report_array : "");
           $item['custom'] = $notice_push;
       }
@@ -53,7 +47,6 @@ if(isset($_POST)){
      break;
      
     case 'insert warning':{
-        var_dump("case 'insert warning'");
       $checkbox_name = $_POST['data']['checkbox_name'];
       $checkbox_val = $_POST['data']['checkbox_val'];
       $where_insert = "";
@@ -78,13 +71,10 @@ if(isset($_POST)){
       $prep_mng_name = $_POST['data']['mng_name'];
       $prep_minus = $_POST['data']['minus'];
       $prep_plus = $_POST['data']['plus'];
-        var_dump("mysqli_req");
       if(!$mysqli_req->query("SELECT `id` FROM leads WHERE id_lead = '$prep_card_id'")->fetch_all(MYSQLI_ASSOC)){
         $res = $mysqli_req->query("INSERT INTO leads(`id_lead`, `notice`, `expert_id`, `expert_name`, `mng_id`, `mng_name`, `date`, `minus`, `plus`,`$where_insert`) VALUES ('$prep_card_id', '$prep_comment', '$prep_expert_id', '$prep_expert_name', '$prep_mng_id', '$prep_mng_name', '$prep_date', '$prep_minus', '$prep_plus', '$what_insert')");
         $mysqli_req->close();
-          var_dump("mysqli_req->query");
       } else{
-          var_dump("else mysqli_req->query");
           for($i = 0; $i < $arr_len; $i++) {
               if (($arr_len - 1) !== $i) {
                   $else_insert = $else_insert . $checkbox_name[$i] . "` = '" . $checkbox_val[$i] . "', `";
@@ -92,7 +82,6 @@ if(isset($_POST)){
                   $else_insert = $else_insert . $checkbox_name[$i] . "` = '" . $checkbox_val[$i] . "'";
               }
           }
-          var_dump("INSERT INTO");
         //$res = $mysqli_req->query("UPDATE leads SET `notice` = '$prep_comment', `expert_id` = '$prep_expert_id', `expert_name` = '$prep_expert_name', `mng_name` = '$prep_mng_name', `readed_by_mng` = '0', `date` = '$prep_date', `minus` = '$prep_minus', `plus` = '$prep_plus', $else_insert  WHERE `id_lead` = '".$_POST['data']['card_id']."'");
           $res = $mysqli_req->query("INSERT INTO leads(`id_lead`, `notice`, `expert_id`, `expert_name`, `mng_id`, `mng_name`, `date`, `minus`, `plus`,`$where_insert`) VALUES ('$prep_card_id', '$prep_comment', '$prep_expert_id', '$prep_expert_name', '$prep_mng_id', '$prep_mng_name', '$prep_date', '$prep_minus', '$prep_plus', '$what_insert')");
           $mysqli_req->close();

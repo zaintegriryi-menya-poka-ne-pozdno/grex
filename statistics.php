@@ -146,37 +146,57 @@ if(isset($_GET['dateInterval1']) || isset($_GET['dateInterval2']) || isset($_GET
             </tr>
             <?php
             $leads_array = array_reverse($leads_array);
+            var_dump($leads_array);
                 foreach ($leads_array as $key => $val) {
-                  $lead_ids = $mysqli_req->query("SELECT $ids FROM leads WHERE `id_lead` = '".$leads_array[$key]['id_lead']."'");
-                  $lead_ids_array = $lead_ids;
-                  var_dump($leads_array);
-                    for ($i = 0; $i<count($lead_ids_array);$i++){
-                        if ($lead_ids_array[$i] != ' ' ||  $lead_ids_array[$i] != 'null' || $lead_ids_array[$i] != null) {
-                            $lead_ids_array = $lead_ids_array[$i];
-                            var_dump($lead_ids_array);
-                            break 1;
-                        }
-                    };
-
-                  $key_or = [];
+//                    var_dump($leads_array[$key]['id_lead']);
+//                    var_dump("ids\n");
+//                    var_dump($ids);
+////                    SELECT "`88`, `92`, `93`" FROM `leads` WHERE `id_lead` = 23766161
+////                    $lead_ids = $mysqli_req->query("SELECT '".$ids."' FROM `leads` WHERE `id_lead` = '".$leads_array[$key]['id_lead']."'")->fetch_all(MYSQLI_ASSOC);
+//                    var_dump('</p>');
+//                    var_dump($lead_ids);
+////                    $lead_ids_array = $lead_ids->fetchAll(PDO::FETCH_COLUMN);
+//                    $lead_ids_array = $lead_ids;
+//                    var_dump('</p>'.count($lead_ids_array));
+                    $lead_ids = $mysqli_req->query("SELECT '".$ids."' FROM `leads` WHERE `id_lead` = '".$leads_array[$key]['id_lead']."'");
+//                    $lead_ids_array = $lead_ids_array[0];
+//                    for ($i = 0; $i<count($lead_ids_array);$i++){
+//                        var_dump($lead_ids_array[$i]);
+//                        if ($lead_ids_array[$i] != '' ||  $lead_ids_array[$i] != 'null' || $lead_ids_array[$i] != null) {
+//                            $lead_ids_array = $lead_ids_array[0];
+//                            var_dump('</p>зашли в иф');
+//                            var_dump($lead_ids_array);
+//                        }
+//                    };
+                    $lead_ids_array = $lead_ids->fetch_all(MYSQLI_ASSOC);
+                    $lead_ids_array = $lead_ids_array[0];
+                    $key_or = [];
                   $mistakes = " ";
-                  $checker = 0;
+                  $checker = 1;
                   foreach($lead_ids_array as $key1 => $val1){
+                      var_dump('</p>зашли в фор');
+                      var_dump($key1);
+                      var_dump('</p>зашли в $val1');
+                      var_dump($val1);
                     if($val1 == "1") {
+                        var_dump('</p>зашли в иф');
                       $key_or[] = "`id` = '$key1'";
                       $key_or[] = "OR";
                       $checker = 1;
                     }
                   }
                   if($checker) {
-                    array_pop($key_or);
-                    $key_or = implode(" ", $key_or);
-                    $res = $mysqli_req->query("SELECT `name` FROM quality_control WHERE $key_or");
-                    $get_key = $res->fetch_all(MYSQLI_ASSOC);
-
-                    foreach ($get_key as $key2 => $value2) {
-                      $mistakes .= '- ' . $get_key[$key2]['name'] . '<br>';
-                    }
+                      array_pop($key_or);
+                      $key_or = implode(" ", $key_or);
+                      var_dump('</p>$checker');
+                      var_dump($key_or);
+                      $res = $mysqli_req->query("SELECT `name` FROM quality_control WHERE '".$key_or."'");
+                      $get_key = $res->fetch_all(MYSQLI_ASSOC);
+                      var_dump('</p>$get_key');
+                      var_dump($get_key);
+                      foreach ($get_key as $key2 => $value2) {
+                          $mistakes .= '- ' . $get_key[$key2]['name'] . '<br>';
+                      }
                   }
                    $lead_time = new DateTime($leads_array[$key]['date']);
                    $date = $lead_time->format("Y-m-d");
