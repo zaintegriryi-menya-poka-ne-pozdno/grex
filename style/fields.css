@@ -85,5 +85,10 @@ main{
 input {
   padding: 2px 5px 2px 5px;
 }
+.filtr{
+    position: absolute;
+    left: 40px;
+    top: 80px;
+}
 
 

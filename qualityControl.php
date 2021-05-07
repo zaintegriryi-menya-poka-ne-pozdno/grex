@@ -22,7 +22,11 @@ if(isset($_POST)){
   switch(@$_POST['action']){
     case 'get_qc_fields': {
       $res = $mysqli_req->query("SELECT * FROM quality_control");
-      $item = $res->fetch_all(MYSQLI_ASSOC);
+      $cat = $mysqli_req->query("SELECT * FROM categori");
+      $m_m = $mysqli_req->query("SELECT * FROM m_m");
+      $item['res'] = $res->fetch_all(MYSQLI_ASSOC);
+      $item['cat'] = $cat->fetch_all(MYSQLI_ASSOC);
+      $item['m_m'] = $m_m->fetch_all(MYSQLI_ASSOC);
       $nota = 0;
       $repa = 0;
       if($notice = $mysqli_req->query("SELECT `notice` FROM leads WHERE `id_lead` = '$_POST[card_id]'"))
@@ -45,8 +49,7 @@ if(isset($_POST)){
       $mysqli_req->close();
      };
      break;
-     
-    case 'insert warning':{
+    case 'insert_warning':{
       $checkbox_name = $_POST['data']['checkbox_name'];
       $checkbox_val = $_POST['data']['checkbox_val'];
       $where_insert = "";
@@ -72,9 +75,10 @@ if(isset($_POST)){
       $prep_minus = $_POST['data']['minus'];
       $prep_plus = $_POST['data']['plus'];
       if(!$mysqli_req->query("SELECT `id` FROM leads WHERE id_lead = '$prep_card_id'")->fetch_all(MYSQLI_ASSOC)){
-        $res = $mysqli_req->query("INSERT INTO leads(`id_lead`, `notice`, `expert_id`, `expert_name`, `mng_id`, `mng_name`, `date`, `minus`, `plus`,`$where_insert`) VALUES ('$prep_card_id', '$prep_comment', '$prep_expert_id', '$prep_expert_name', '$prep_mng_id', '$prep_mng_name', '$prep_date', '$prep_minus', '$prep_plus', '$what_insert')");
-        $mysqli_req->close();
+          $res = $mysqli_req->query("INSERT INTO `leads`(`id_lead`, `notice`, `expert_id`, `expert_name`, `mng_id`, `mng_name`, `date`, `minus`, `plus`,`$where_insert`) VALUES ('$prep_card_id', '$prep_comment', '$prep_expert_id', '$prep_expert_name', '$prep_mng_id', '$prep_mng_name', '$prep_date', '$prep_minus', '$prep_plus', '$what_insert')");
+          $mysqli_req->close();
       } else{
+          $result = 'зашли в элсе';
           for($i = 0; $i < $arr_len; $i++) {
               if (($arr_len - 1) !== $i) {
                   $else_insert = $else_insert . $checkbox_name[$i] . "` = '" . $checkbox_val[$i] . "', `";
@@ -83,10 +87,12 @@ if(isset($_POST)){
               }
           }
         //$res = $mysqli_req->query("UPDATE leads SET `notice` = '$prep_comment', `expert_id` = '$prep_expert_id', `expert_name` = '$prep_expert_name', `mng_name` = '$prep_mng_name', `readed_by_mng` = '0', `date` = '$prep_date', `minus` = '$prep_minus', `plus` = '$prep_plus', $else_insert  WHERE `id_lead` = '".$_POST['data']['card_id']."'");
-          $res = $mysqli_req->query("INSERT INTO leads(`id_lead`, `notice`, `expert_id`, `expert_name`, `mng_id`, `mng_name`, `date`, `minus`, `plus`,`$where_insert`) VALUES ('$prep_card_id', '$prep_comment', '$prep_expert_id', '$prep_expert_name', '$prep_mng_id', '$prep_mng_name', '$prep_date', '$prep_minus', '$prep_plus', '$what_insert')");
+          $res = $mysqli_req->query("INSERT INTO `leads`(`id_lead`, `notice`, `expert_id`, `expert_name`, `mng_id`, `mng_name`, `date`, `minus`, `plus`,`$where_insert`) VALUES ('$prep_card_id', '$prep_comment', '$prep_expert_id', '$prep_expert_name', '$prep_mng_id', '$prep_mng_name', '$prep_date', '$prep_minus', '$prep_plus', '$what_insert')");
           $mysqli_req->close();
        }
     };
+      echo $where_insert;
+//        echo json_encode($res, JSON_UNESCAPED_UNICODE);
     break;
     
     case 'get_filled_fields':{
@@ -150,8 +156,7 @@ if(isset($_POST)){
       $mysqli_req->close();
     };
     break;
-
-    case 'delete warning':{
+    case 'delete warning':{ // Удалить и в CRM и в БД
       $mysqli_req->query("DELETE FROM `leads` WHERE `id_lead` = '".$_POST['data']['card_id']."'");
       $mysqli_req->close();
     };

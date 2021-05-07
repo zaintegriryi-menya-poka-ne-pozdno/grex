@@ -1,5 +1,6 @@
 <?php
       require_once "settings.php";
+
       $qc_fields = $mysqli_req->query("SELECT * FROM quality_control");
       $categori = $mysqli_req->query("SELECT * FROM categori")->fetch_all(MYSQLI_ASSOC);
       $m_m = $mysqli_req->query("SELECT * FROM m_m")->fetch_all(MYSQLI_ASSOC);
@@ -7,6 +8,32 @@
 
 
 //      $categori->set_charset("utf8");
+$noFilter = false;
+$query = "";
+if(isset($_POST['id_categori_forfilter'])){
+    if ($_POST['id_categori_forfilter'] != 'vse') {
+        $idcat = intval($_POST['id_categori_forfilter']);
+        $query = "`id_categori` = $idcat";
+        $m_m = $mysqli_req->query("SELECT * FROM `m_m` WHERE $query ORDER BY `id_categori`")->fetch_all(MYSQLI_ASSOC);
+        $qc_fields_arrayyy = array();
+        for ($i = 0; $i < count($m_m); $i++) {
+            for ($j = 0; $j < count($qc_fields_array); $j++) {
+                if ($m_m[$i]['id_quality'] == $qc_fields_array[$j]['id']) {
+                    $qc_fields_arrayyy[] = $qc_fields_array[$j];
+                }
+            }
+        }
+        $qc_fields_array = $qc_fields_arrayyy;
+    }
+
+}
+if(isset($_POST['offfilter'])){
+    $qc_fields = $mysqli_req->query("SELECT * FROM quality_control");
+    $categori = $mysqli_req->query("SELECT * FROM categori")->fetch_all(MYSQLI_ASSOC);
+    $m_m = $mysqli_req->query("SELECT * FROM m_m")->fetch_all(MYSQLI_ASSOC);
+    $qc_fields_array = $qc_fields->fetch_all(MYSQLI_ASSOC);
+    $noFilter = true;
+}
       if(isset($_POST['button_ok']))
         {   $id_cat = intval($_POST['id_categori']);
             $id_qua = intval($_POST['button_ok']);
@@ -69,6 +96,7 @@
         <li>
           <ul><a class="menu_item active" href="fields.php">Редактирование полей</a></ul>
           <ul><a class="menu_item" href="statistics.php">Статистика</a></ul>
+            <ul><a class="menu_item" href="categori.php">Категория</a></ul>
           <ul><a class="menu_item" href="fields.php">Штаб</a></ul>
           <ul><form method="post"><input class="menu_item exit_btn" type="submit" value="Выйти" name="exit"></form></ul>
         </li>
@@ -78,7 +106,7 @@
     <?php
       $rows = '';
       foreach($qc_fields_array as $key => $val){
-          $select = '<option value=" "> </option>';
+          $select = '<option value="vse"> </option>';
           for($i = 0; $i < count($categori);$i++) {
               for ($j = 0; $j < count($m_m); $j++) {
                   if ($categori[$i]['id'] == $m_m[$j]['id_categori'] && $m_m[$j]['id_quality'] == $qc_fields_array[$key]['id']) {
@@ -118,7 +146,13 @@
                   </td>';
 
       }
-      echo '<div class="fields_form">
+      echo '<div class="filtr">Подбор по категориям: <form action="" method="post">
+        <select valeu name="id_categori_forfilter" id="id_categori_forfilter">'.
+          $select.'
+                        </select><button>Поиск</button>
+                        <button name="offfilter" class="button">Сбросить</button>
+      </form></div>
+                        <div class="fields_form">
                 <form action="" method="post">
                     <table id="modul_table">
                     <tr id="thead">
