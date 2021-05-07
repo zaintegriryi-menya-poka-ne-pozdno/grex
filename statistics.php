@@ -15,7 +15,7 @@ $itemcount = count($item);
         $ids = $ids . $item[$i]['id'] . '`';
         }
  }
-//ПОЛУЧИЛИ ЗАМЕЧАНИЯ
+//ПОЛУЧИЛИ ЗАМЕЧА
 $noFilter = false;
 if(isset($_GET['dateInterval1']) || isset($_GET['dateInterval2']) || isset($_GET['managerName']) || isset($_GET['id_categori_forfilter'])){
     $query = "";
