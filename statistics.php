@@ -265,12 +265,14 @@ if(isset($_GET['dateInterval1']) || isset($_GET['dateInterval2']) || isset($_GET
 //                  array_push($allmen,array($leads_array1[$i],$kolmen));
 //                  var_dump($allmen);
 //                  var_dump('<br>');
-                  if ($leads_array2[$i]['mng_name'] != '' && $leads_array2[$i]['mng_name'] != null) {
-                      echo "<tr>
+                  if (isset($leads_array2[$i])) {
+                      if ($leads_array2[$i]['mng_name'] != '' && $leads_array2[$i]['mng_name'] != null) {
+                          echo "<tr>
                     <td>" . $leads_array2[$i]['mng_name'] . "</td>
                     <td class='red'>$kolmen</td>
                     <td class='red'>$kolsumm</td>
                     </tr>";
+                      }
                   }
 
               }
