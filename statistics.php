@@ -160,75 +160,70 @@ if(isset($_GET['dateInterval1']) || isset($_GET['dateInterval2']) || isset($_GET
             <td>Проверенных сделок/месяц</td>
             <td>Заработано/месяц</td>
           </tr>
-<!--            --><?php
-//              for($i = 0; $i < count($categori);$i++) {
-//                  $select .= '<option value="' . $categori[$i]['id'] . '">' . $categori[$i]['name_categori'] . '</option>';
-//              }
-//              $countt = 0;
-//              $allmen = array();
-//              $leads_array3 = array_reverse($leads_array);
-//              $leads_array4 = array_reverse($leads_array);
-//              var_dump($leads_array3);
-//            var_dump(count($leads_array3));
-//            $lastkolmen = 0;
-//            $lastkolsumm = 0;
-//              for ($i = 0;$i<count($leads_array3);$i++) {
-//                  $kolmen = 1;
-//                  $kolsumm = $leads_array3[$i]['plus'];
-////                  if ($i+1 !== count($leads_array3)) {
-////                      var_dump($i.'<br>');
-////                      var_dump('!==');
-//                  $schet = $i;
-//                  var_dump(count($leads_array4).'<br>');
-//                  var_dump($leads_array4);
-//                  var_dump($schet.'<br>');
-//                      for ($j = 0; $j < count($leads_array4); $j++) {
-//                          var_dump($j);
-//                          if ($leads_array3[$i]['expert_id'] == $leads_array4[$schet]['expert_id']) {
-//                              var_dump(' if ');
-//                              $kolmen += 1;
-//                              $kolsumm += $leads_array4[$schet]['plus'];
-//                              unset($leads_array4[$schet]);
-////                          unset($leads_array2[$i]);
-//                          } else {
-//                              var_dump('else ');
-//                              continue;
-//                          }
+            <?php
+              for($i = 0; $i < count($categori);$i++) {
+                  $select .= '<option value="' . $categori[$i]['id'] . '">' . $categori[$i]['name_categori'] . '</option>';
+              }
+              $countt = 0;
+              $allmen = array();
+              $leads_array3 = array_reverse($leads_array);
+              $leads_array4 = array_reverse($leads_array);
+            $lastkolmen = 0;
+            $lastkolsumm = 0;
+              for ($i = 0;$i<count($leads_array3);$i++) {
+                  $kolmen = 1;
+                  $kolsumm = $leads_array3[$i]['plus'];
+                  if ($i + 1 == count($leads_array3))
+                      $schet = $i;
+                  else
+                      $schet = $i + 1;
+                  for ($j = $schet; $j < count($leads_array4); $j++) {
+                      if ($leads_array3[$i]['expert_id'] == $leads_array4[$j]['expert_id']) {
+                          $kolmen += 1;
+                          $kolsumm += $leads_array4[$j]['plus'];
+//                              unset($leads_array4[$j]);
+                          unset($leads_array3[$j]);
+//                          unset($leads_array2[$i]);
+                      } else {
+                          continue;
+                      }
 //                          var_dump($schet.'$schet ');
 //                          $schet +=1;
+                  }
+//                  }else{
+//                      var_dump($i.'<br>');
+//                      var_dump('else');
+//                      var_dump($lastkolmen.'<br>');
+//                      var_dump($lastkolsumm.'<br>');
+//                      for($j = (count($leads_array4)-1); $j < count($leads_array4); $j++) {
+//                          var_dump($j.'$j<br>');
+//                          var_dump($leads_array3[$i]['expert_id'].'<br>');
+//                          var_dump($leads_array4[$i]['expert_id'].'<br>');
+//                          if ($leads_array3[$i]['expert_id'] == $leads_array4[$i]['expert_id']) {
+//                              var_dump($leads_array3[$i]['expert_id'].'if<br>');
+//                              var_dump($kolmen.'<br>');
+//                              var_dump($kolsumm.'<br>');
+//                              $lastkolmen += 1;
+//                              $lastkolsumm += $leads_array4[$i]['plus'];
+//                              unset($leads_array4[$i]);
+////                          unset($leads_array2[$i]);
+//                          } else {
+//                              var_dump($leads_array3[$i]['expert_id'].'else <br>');
+//                              continue;
+//                          }
 //                      }
-////                  }else{
-////                      var_dump($i.'<br>');
-////                      var_dump('else');
-////                      var_dump($lastkolmen.'<br>');
-////                      var_dump($lastkolsumm.'<br>');
-////                      for($j = (count($leads_array4)-1); $j < count($leads_array4); $j++) {
-////                          var_dump($j.'$j<br>');
-////                          var_dump($leads_array3[$i]['expert_id'].'<br>');
-////                          var_dump($leads_array4[$i]['expert_id'].'<br>');
-////                          if ($leads_array3[$i]['expert_id'] == $leads_array4[$i]['expert_id']) {
-////                              var_dump($leads_array3[$i]['expert_id'].'if<br>');
-////                              var_dump($kolmen.'<br>');
-////                              var_dump($kolsumm.'<br>');
-////                              $lastkolmen += 1;
-////                              $lastkolsumm += $leads_array4[$i]['plus'];
-////                              unset($leads_array4[$i]);
-//////                          unset($leads_array2[$i]);
-////                          } else {
-////                              var_dump($leads_array3[$i]['expert_id'].'else <br>');
-////                              continue;
-////                          }
-////                      }
-////                  }
-//                  if ($leads_array4[$i]['expert_name'] !== '' && $leads_array4[$i]['expert_name'] !== null) {
-//                      echo "<tr>
-//                    <td>" . $leads_array4[$i]['expert_name'] . "</td>
-//                    <td class='red'>$kolmen</td>
-//                    <td class='red'>$kolsumm</td>
-//                    </tr>";
 //                  }
-//              }
-//            ?>
+                  if (isset($leads_array4[$i])) {
+                      if ($leads_array4[$i]['expert_name'] !== '' && $leads_array4[$i]['expert_name'] !== null) {
+                          echo "<tr>
+                    <td>" . $leads_array4[$i]['expert_name'] . "</td>
+                    <td class='green'>$kolmen</td>
+                    <td class='green'>$kolsumm</td>
+                    </tr>";
+                      }
+                  }
+              }
+            ?>
         </table>
       </div>
       </div>
@@ -252,8 +247,12 @@ if(isset($_GET['dateInterval1']) || isset($_GET['dateInterval2']) || isset($_GET
               for ($i = 0;$i<count($leads_array1);$i++) {
                   $kolmen = 1;
                   $kolsumm = $leads_array1[$i]['minus'];
-                  for ($j = $i+1;$j<count($leads_array1);$j++) {
-                      if ($leads_array1[$i]['mng_id'] == $leads_array2[$j]['mng_id']) {
+                  if ($i+1 == count($leads_array1))
+                      $schet = $i;
+                  else
+                      $schet = $i+1;
+                  for ($j = $schet;$j<count($leads_array1);$j++) {
+                      if ($leads_array1[$i]['mng_id'] == $leads_array2[$j]['mng_id'] && $i<$j) {
                           $kolmen += 1;
                           $kolsumm += $leads_array2[$j]['minus'];
                           unset($leads_array2[$j]);
@@ -262,9 +261,6 @@ if(isset($_GET['dateInterval1']) || isset($_GET['dateInterval2']) || isset($_GET
                           continue;
                       }
                   }
-//                  array_push($allmen,array($leads_array1[$i],$kolmen));
-//                  var_dump($allmen);
-//                  var_dump('<br>');
                   if (isset($leads_array2[$i])) {
                       if ($leads_array2[$i]['mng_name'] != '' && $leads_array2[$i]['mng_name'] != null) {
                           echo "<tr>

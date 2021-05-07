@@ -79,13 +79,13 @@ if(isset($_POST)){
           $mysqli_req->close();
       } else{
           $result = 'зашли в элсе';
-          for($i = 0; $i < $arr_len; $i++) {
-              if (($arr_len - 1) !== $i) {
-                  $else_insert = $else_insert . $checkbox_name[$i] . "` = '" . $checkbox_val[$i] . "', `";
-              } else {
-                  $else_insert = $else_insert . $checkbox_name[$i] . "` = '" . $checkbox_val[$i] . "'";
-              }
-          }
+//          for($i = 0; $i < $arr_len; $i++) {
+//              if (($arr_len - 1) !== $i) {
+//                  $else_insert = $else_insert . $checkbox_name[$i] . "` = '" . $checkbox_val[$i] . "', `";
+//              } else {
+//                  $else_insert = $else_insert . $checkbox_name[$i] . "` = '" . $checkbox_val[$i] . "'";
+//              }
+//          }
         //$res = $mysqli_req->query("UPDATE leads SET `notice` = '$prep_comment', `expert_id` = '$prep_expert_id', `expert_name` = '$prep_expert_name', `mng_name` = '$prep_mng_name', `readed_by_mng` = '0', `date` = '$prep_date', `minus` = '$prep_minus', `plus` = '$prep_plus', $else_insert  WHERE `id_lead` = '".$_POST['data']['card_id']."'");
           $res = $mysqli_req->query("INSERT INTO `leads`(`id_lead`, `notice`, `expert_id`, `expert_name`, `mng_id`, `mng_name`, `date`, `minus`, `plus`,`$where_insert`) VALUES ('$prep_card_id', '$prep_comment', '$prep_expert_id', '$prep_expert_name', '$prep_mng_id', '$prep_mng_name', '$prep_date', '$prep_minus', '$prep_plus', '$what_insert')");
           $mysqli_req->close();
