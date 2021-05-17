@@ -76,7 +76,7 @@ if(isset($_POST['offfilter'])){
           $id = $mysqli_req->insert_id;
           $id_cat = intval($_POST['id_categori']);
           $mysqli_req->query("INSERT INTO `m_m`(`id_categori`, `id_quality`) VALUES($id_cat, $id)");
-          $mysqli_req->query("ALTER TABLE `leads` ADD `$mysqli_req->insert_id` INT(1) NULL DEFAULT NULL");
+          $mysqli_req->query("ALTER TABLE `leads` ADD `$id` INT(1) NULL DEFAULT NULL");
           unset($_POST);$_POST = array(); $mysqli_req->close();header("Refresh: 0");}
 ?>
 <!DOCTYPE html>

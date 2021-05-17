@@ -20,31 +20,50 @@ date_default_timezone_set("Asia/Krasnoyarsk");
 if(isset($_POST)){
   $prep_date = date("Y-m-d H:i:s");
   switch(@$_POST['action']){
-    case 'get_qc_fields': {
-      $res = $mysqli_req->query("SELECT * FROM quality_control");
-      $cat = $mysqli_req->query("SELECT * FROM categori");
-      $m_m = $mysqli_req->query("SELECT * FROM m_m");
-      $item['res'] = $res->fetch_all(MYSQLI_ASSOC);
-      $item['cat'] = $cat->fetch_all(MYSQLI_ASSOC);
-      $item['m_m'] = $m_m->fetch_all(MYSQLI_ASSOC);
-      $nota = 0;
-      $repa = 0;
-      if($notice = $mysqli_req->query("SELECT `notice` FROM leads WHERE `id_lead` = '$_POST[card_id]'"))
-        {
-        $nota = 1;
-        $notice_array = $notice->fetch_all(MYSQLI_ASSOC); 
-        @$notice_array = $notice_array[0]['notice'];
-        }
-      if($report = $mysqli_req->query("SELECT `report` FROM leads WHERE `id_lead` = '$_POST[card_id]'"))
-        {
-        $repa = 1;
-        $report_array = $report->fetch_all(MYSQLI_ASSOC); 
-        @$report_array = $report_array[0]['report'];
-        }
-      if($nota || $repa) {
-          $notice_push = (object)array('notice' => $notice_array != null ? $notice_array : "", 'report' => $report_array != null ? $report_array : "");
-          $item['custom'] = $notice_push;
+      case 'otvif':{
+          $prep_card_id = $_POST['data']['card_id'];
+          $prep_otv_id = $_POST['data']['otv_id'];
+          $prep_curr_user = $_POST['data']['curr_user'];
+//          echo $prep_card_id;
+          $bd = $mysqli_req->query("SELECT * FROM leads WHERE id_lead = '$prep_card_id' AND mng_id = '$prep_otv_id'");
+          if ($mysqli_req->query("SELECT * FROM leads WHERE id_lead = '$prep_card_id' AND mng_id = '$prep_otv_id'")) {
+              echo 1;
+              break;
+          }else{
+              echo 0;
+              break;
+          }
+
       }
+      break;
+    case 'get_qc_fields':
+        {
+            $res = $mysqli_req->query("SELECT * FROM quality_control");
+            $cat = $mysqli_req->query("SELECT * FROM categori");
+            $m_m = $mysqli_req->query("SELECT * FROM m_m");
+            $item['res'] = $res->fetch_all(MYSQLI_ASSOC);
+            $item['cat'] = $cat->fetch_all(MYSQLI_ASSOC);
+            $item['m_m'] = $m_m->fetch_all(MYSQLI_ASSOC);
+            $nota = 0;
+            $repa = 0;
+//        '$_POST[mng_id]'
+            $iduser = $mysqli_req->query("SELECT `mng_id` FROM leads WHERE `mng_id` = '$_POST[mng_id]'");
+            if ($iduser) {
+                if ($notice = $mysqli_req->query("SELECT `notice` FROM leads WHERE `id_lead` = '$_POST[card_id]'")) {
+                    $nota = 1;
+                    $notice_array = $notice->fetch_all(MYSQLI_ASSOC);
+                    @$notice_array = $notice_array[0]['notice'];
+                }
+                if ($report = $mysqli_req->query("SELECT `report` FROM leads WHERE `id_lead` = '$_POST[card_id]'")) {
+                    $repa = 1;
+                    $report_array = $report->fetch_all(MYSQLI_ASSOC);
+                    @$report_array = $report_array[0]['report'];
+                }
+                if ($nota || $repa) {
+                    $notice_push = (object)array('notice' => $notice_array != null ? $notice_array : "", 'report' => $report_array != null ? $report_array : "");
+                    $item['custom'] = $notice_push;
+                }
+            }
       echo json_encode($item, JSON_UNESCAPED_UNICODE);
       $mysqli_req->close();
      };
@@ -74,11 +93,11 @@ if(isset($_POST)){
       $prep_mng_name = $_POST['data']['mng_name'];
       $prep_minus = $_POST['data']['minus'];
       $prep_plus = $_POST['data']['plus'];
-      if(!$mysqli_req->query("SELECT `id` FROM leads WHERE id_lead = '$prep_card_id'")->fetch_all(MYSQLI_ASSOC)){
-          $res = $mysqli_req->query("INSERT INTO `leads`(`id_lead`, `notice`, `expert_id`, `expert_name`, `mng_id`, `mng_name`, `date`, `minus`, `plus`,`$where_insert`) VALUES ('$prep_card_id', '$prep_comment', '$prep_expert_id', '$prep_expert_name', '$prep_mng_id', '$prep_mng_name', '$prep_date', '$prep_minus', '$prep_plus', '$what_insert')");
-          $mysqli_req->close();
-      } else{
-          $result = 'зашли в элсе';
+//      if(!$mysqli_req->query("SELECT `id` FROM leads WHERE id_lead = '$prep_card_id'")->fetch_all(MYSQLI_ASSOC)){
+//          $res = $mysqli_req->query("INSERT INTO `leads`(`id_lead`, `notice`, `expert_id`, `expert_name`, `mng_id`, `mng_name`, `date`, `minus`, `plus`,`$where_insert`) VALUES ('$prep_card_id', '$prep_comment', '$prep_expert_id', '$prep_expert_name', '$prep_mng_id', '$prep_mng_name', '$prep_date', '$prep_minus', '$prep_plus', '$what_insert')");
+//          $mysqli_req->close();
+//      } else{
+//          $result = 'зашли в элсе';
 //          for($i = 0; $i < $arr_len; $i++) {
 //              if (($arr_len - 1) !== $i) {
 //                  $else_insert = $else_insert . $checkbox_name[$i] . "` = '" . $checkbox_val[$i] . "', `";
@@ -89,9 +108,8 @@ if(isset($_POST)){
         //$res = $mysqli_req->query("UPDATE leads SET `notice` = '$prep_comment', `expert_id` = '$prep_expert_id', `expert_name` = '$prep_expert_name', `mng_name` = '$prep_mng_name', `readed_by_mng` = '0', `date` = '$prep_date', `minus` = '$prep_minus', `plus` = '$prep_plus', $else_insert  WHERE `id_lead` = '".$_POST['data']['card_id']."'");
           $res = $mysqli_req->query("INSERT INTO `leads`(`id_lead`, `notice`, `expert_id`, `expert_name`, `mng_id`, `mng_name`, `date`, `minus`, `plus`,`$where_insert`) VALUES ('$prep_card_id', '$prep_comment', '$prep_expert_id', '$prep_expert_name', '$prep_mng_id', '$prep_mng_name', '$prep_date', '$prep_minus', '$prep_plus', '$what_insert')");
           $mysqli_req->close();
-       }
+//       }
     };
-      echo $where_insert;
 //        echo json_encode($res, JSON_UNESCAPED_UNICODE);
     break;
     

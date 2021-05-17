@@ -161,68 +161,41 @@ if(isset($_GET['dateInterval1']) || isset($_GET['dateInterval2']) || isset($_GET
             <td>Заработано/месяц</td>
           </tr>
             <?php
-              for($i = 0; $i < count($categori);$i++) {
-                  $select .= '<option value="' . $categori[$i]['id'] . '">' . $categori[$i]['name_categori'] . '</option>';
-              }
               $countt = 0;
               $allmen = array();
               $leads_array3 = array_reverse($leads_array);
               $leads_array4 = array_reverse($leads_array);
             $lastkolmen = 0;
             $lastkolsumm = 0;
-              for ($i = 0;$i<count($leads_array3);$i++) {
-                  $kolmen = 1;
-                  $kolsumm = $leads_array3[$i]['plus'];
-                  if ($i + 1 == count($leads_array3))
-                      $schet = $i;
-                  else
-                      $schet = $i + 1;
-                  for ($j = $schet; $j < count($leads_array4); $j++) {
-                      if ($leads_array3[$i]['expert_id'] == $leads_array4[$j]['expert_id']) {
-                          $kolmen += 1;
-                          $kolsumm += $leads_array4[$j]['plus'];
-//                              unset($leads_array4[$j]);
-                          unset($leads_array3[$j]);
-//                          unset($leads_array2[$i]);
-                      } else {
-                          continue;
-                      }
-//                          var_dump($schet.'$schet ');
-//                          $schet +=1;
-                  }
-//                  }else{
-//                      var_dump($i.'<br>');
-//                      var_dump('else');
-//                      var_dump($lastkolmen.'<br>');
-//                      var_dump($lastkolsumm.'<br>');
-//                      for($j = (count($leads_array4)-1); $j < count($leads_array4); $j++) {
-//                          var_dump($j.'$j<br>');
-//                          var_dump($leads_array3[$i]['expert_id'].'<br>');
-//                          var_dump($leads_array4[$i]['expert_id'].'<br>');
-//                          if ($leads_array3[$i]['expert_id'] == $leads_array4[$i]['expert_id']) {
-//                              var_dump($leads_array3[$i]['expert_id'].'if<br>');
-//                              var_dump($kolmen.'<br>');
-//                              var_dump($kolsumm.'<br>');
-//                              $lastkolmen += 1;
-//                              $lastkolsumm += $leads_array4[$i]['plus'];
-//                              unset($leads_array4[$i]);
-////                          unset($leads_array2[$i]);
-//                          } else {
-//                              var_dump($leads_array3[$i]['expert_id'].'else <br>');
-//                              continue;
-//                          }
-//                      }
-//                  }
-                  if (isset($leads_array4[$i])) {
-                      if ($leads_array4[$i]['expert_name'] !== '' && $leads_array4[$i]['expert_name'] !== null) {
-                          echo "<tr>
-                    <td>" . $leads_array4[$i]['expert_name'] . "</td>
-                    <td class='green'>$kolmen</td>
-                    <td class='green'>$kolsumm</td>
+            $tt[0] = $leads_array3[0];
+            $kolsumm = $leads_array3[0]['plus'];
+            $keys=array(); // Массив ключей, которые уже встречались
+            foreach($leads_array3 as $k=>$val) {
+                if(array_key_exists($val['expert_id'],$keys)) {
+                    unset($leads_array3[$k]);
+                } else {
+                    $keys[$val['expert_id']]=1;
+                }
+            }
+            for ($i = 0; $i < count($leads_array4); $i++) {
+                foreach ($leads_array3 as $k => $val) {
+                    if ($leads_array4[$i]['expert_id'] == $val['expert_id'] && $i > $k) {
+                        $leads_array3[$k]['plus'] += intval($leads_array4[$i]['plus']);
+                    }
+                }
+            }
+            $col = array_count_values(array_column($leads_array4,'expert_id'));
+            foreach ($leads_array3 as $k => $val) {
+                foreach ($col as $kcol => $valcol) {
+                        if ($leads_array3[$k]['expert_name'] !== '' && $leads_array3[$k]['expert_name'] !== null && $kcol == $leads_array3[$k]['expert_id']) {
+                            echo "<tr>
+                    <td>" . $leads_array3[$k]['expert_name'] . "</td>
+                    <td class='green'>" . $valcol . "</td>
+                    <td class='green'>" . $leads_array3[$k]['plus'] . "</td>
                     </tr>";
-                      }
-                  }
-              }
+                        }
+                    }
+            }
             ?>
         </table>
       </div>
@@ -244,84 +217,66 @@ if(isset($_GET['dateInterval1']) || isset($_GET['dateInterval2']) || isset($_GET
               $allmen = array();
               $leads_array1 = array_reverse($leads_array);
               $leads_array2 = array_reverse($leads_array);
-              for ($i = 0;$i<count($leads_array1);$i++) {
-                  $kolmen = 1;
-                  $kolsumm = $leads_array1[$i]['minus'];
-                  if ($i+1 == count($leads_array1))
-                      $schet = $i;
-                  else
-                      $schet = $i+1;
-                  for ($j = $schet;$j<count($leads_array1);$j++) {
-                      if ($leads_array1[$i]['mng_id'] == $leads_array2[$j]['mng_id'] && $i<$j) {
-                          $kolmen += 1;
-                          $kolsumm += $leads_array2[$j]['minus'];
-                          unset($leads_array2[$j]);
-//                          unset($leads_array2[$i]);
-                      } else {
-                          continue;
+              $keys=array(); // Массив ключей, которые уже встречались
+              foreach($leads_array1 as $k=>$val) {
+                  if(array_key_exists($val['mng_id'],$keys)) {
+                      unset($leads_array1[$k]);
+                  } else {
+                      $keys[$val['mng_id']]=1;
+                  }
+              }
+              for ($i = 0; $i < count($leads_array2); $i++) {
+                  foreach ($leads_array1 as $k => $val) {
+                      if ($leads_array2[$i]['mng_id'] == $val['mng_id'] && $i > $k) {
+                          $leads_array1[$k]['minus'] += intval($leads_array2[$i]['minus']);
                       }
                   }
-                  if (isset($leads_array2[$i])) {
-                      if ($leads_array2[$i]['mng_name'] != '' && $leads_array2[$i]['mng_name'] != null) {
+              }
+              $col = array_count_values(array_column($leads_array2,'mng_id'));
+              foreach ($leads_array1 as $k => $val) {
+                  foreach ($col as $kcol => $valcol) {
+                      if ($leads_array1[$k]['mng_name'] != '' && $leads_array1[$k]['mng_name'] != null && $kcol == $leads_array1[$k]['mng_id']) {
                           echo "<tr>
-                    <td>" . $leads_array2[$i]['mng_name'] . "</td>
-                    <td class='red'>$kolmen</td>
-                    <td class='red'>$kolsumm</td>
+                    <td>" . $leads_array1[$k]['mng_name'] . "</td>
+                    <td class='red'>$valcol</td>
+                    <td class='red'>" . $leads_array1[$k]['minus'] . "</td>
                     </tr>";
                       }
                   }
-
               }
 
-//              foreach ($leads_array as $key => $val) {
-//
-//                  $lead_ids = $mysqli_req->query("SELECT $ids FROM leads WHERE `id_lead` = '".$leads_array[$key]['id_lead']."'");
-//                  $lead_ids_array = $lead_ids->fetch_all(MYSQLI_ASSOC);
-//                  $lead_ids_array = $lead_ids_array[$countt];
-//                  $key_or = [];
-//                  $mistakes = "";
-//                  $checker = 0;
-//                  foreach($lead_ids_array as $key1 => $val1){
-//                      if($val1 == "1") {
-//                          $key_or[] = "`id` = '$key1'";
-//                          $key_or[] = "OR";
-//                          $checker = 1;
+//              for ($i = 0;$i<count($leads_array1);$i++) {
+//                  $kolmen = 1;
+//                  $kolsumm = $leads_array1[$i]['minus'];
+//                  if ($i+1 == count($leads_array1))
+//                      $schet = $i;
+//                  else
+//                      $schet = $i+1;
+//                  if (isset($leads_array1[$schet])) {
+//                      for ($j = $schet; $j < count($leads_array1); $j++) {
+//                          if ($leads_array1[$i]['mng_id'] == $leads_array2[$j]['mng_id'] && $i < $j) {
+//                              $kolmen += 1;
+//                              $kolsumm += $leads_array2[$j]['minus'];
+//                              unset($leads_array2[$j]);
+////                          unset($leads_array2[$i]);
+//                          } else {
+//                              continue;
+//                          }
 //                      }
 //                  }
-//                  if($checker) {
-//                      array_pop($key_or);
-//                      $key_or = implode(" ", $key_or);
-//                      $res = $mysqli_req->query("SELECT `name` FROM quality_control WHERE $key_or");
-//                      $get_key = $res->fetch_all(MYSQLI_ASSOC);
-//                      foreach ($get_key as $key2 => $value2) {
-//                          $mistakes .= '- ' . $get_key[$key2]['name'] . '<br>';
-//                      }
-//                  }
-//                  $lead_time = new DateTime($leads_array[$key]['date']);
-//                  $date = $lead_time->format("Y-m-d");
-//                  $time = $lead_time->format("H:i:s");
-//
-//                  if($leads_array[$key]['date_mng'] !== '0000-00-00 00:00:00'){
-//                      $lead_time_mng = new DateTime($leads_array[$key]['date_mng']);
-//                      $date_mng = $lead_time_mng->format("Y-m-d");
-//                      $time_mng = $lead_time_mng->format("H:i:s");
-//                  }
-//                  else{
-//                      $date_mng = '-'; $time_mng = '-';
-//                  }
-//
-//
-//                  echo "<tr>
-//                    <td>".$leads_array[$key]['mng_name']."</td>
-//                    <td>".$leads_array[$key]['notice']."</td>
-//                    <td>".$leads_array[$key]['report']."</td>
-//                    <td class='green'>".$leads_array[$key]['plus']."</td>
-//                    <td class='red'>".$leads_array[$key]['minus']."</td>
-//                    <td>".$mistakes."</td>
+//                  if (isset($leads_array2[$i])) {
+//                      if ($leads_array2[$i]['mng_name'] != '' && $leads_array2[$i]['mng_name'] != null) {
+//                          echo "<tr>
+//                    <td>" . $leads_array2[$i]['mng_name'] . "</td>
+//                    <td class='red'>$kolmen</td>
+//                    <td class='red'>$kolsumm</td>
 //                    </tr>";
-//                  $countt += 1;
+//                      }
+//                  }
+//
 //              }
 
+//
               ?>
           </table>
         </div>
@@ -348,11 +303,40 @@ if(isset($_GET['dateInterval1']) || isset($_GET['dateInterval2']) || isset($_GET
                 $select .= '<option value="' . $categori[$i]['id'] . '">' . $categori[$i]['name_categori'] . '</option>';
             }
             $countt = 0;
+            $tt = 0;
             $leads_arrayz = array_reverse($leads_array);
             foreach ($leads_arrayz as $key => $val) {
-                $lead_ids = $mysqli_req->query("SELECT $ids FROM leads WHERE `id_lead` = '".$leads_arrayz[$key]['id_lead']."'");
+                $lead_ids = $mysqli_req->query("SELECT $ids FROM leads WHERE `id_lead` = '".$leads_arrayz[$key]['id_lead']."' AND `mng_id` = '".$leads_arrayz[$key]['mng_id']."' AND `minus` = '".$leads_arrayz[$key]['minus']."'");
                 $lead_ids_array = $lead_ids->fetch_all(MYSQLI_ASSOC);
-                $lead_ids_array = $lead_ids_array[0];
+                $lead_ids_array = array_reverse($lead_ids_array);
+//                for ($i = 0;$i<count($leads_arrayz);$i++){
+//                    if ($leads_arrayz[$key]['id_lead'] == $leads_arrayz[$i]['id_lead'] && $leads_arrayz[$key]['mng_id'] == $leads_arrayz[$i]['mng_id'] && $key < $i){
+//
+//                        var_dump('<br>');
+//                        var_dump('это тт'.$tt);
+//                        $tt +=1;
+//                        var_dump('<br>');
+//                    }
+//                }
+//                if (count($lead_ids_array)>=2){
+//                    $lead_ids_array = $lead_ids_array[$countt];
+//                    $countt += 1;
+//                }else{
+//                    $lead_ids_array = $lead_ids_array[0];
+//                }
+                $lead_ids_array = end($lead_ids_array);//$lead_ids_array[0];
+//               for ($i = $key+1;$i < count($leads_arrayz);$i++){
+//                    var_dump($i);
+//                    var_dump($key);
+//                    var_dump($leads_arrayz[$i]['id_lead']);
+//                    var_dump($leads_arrayz[$key]['id_lead']);
+//                    var_dump($leads_arrayz[$i]['mng_id']);
+//                    var_dump($leads_arrayz[$key]['mng_id']);
+//                    if ($leads_arrayz[$i]['id_lead'] == $leads_arrayz[$key]['id_lead'] && $leads_arrayz[$i]['mng_id'] == $leads_arrayz[$key]['mng_id'] && $i !== $key){
+//                        $lead_ids_array = $lead_ids_array[$countt];
+//                        break;
+//                    }
+//                }
                 $key_or = [];
                 $mistakes = "";
                 $checker = 0;
@@ -378,8 +362,10 @@ if(isset($_GET['dateInterval1']) || isset($_GET['dateInterval2']) || isset($_GET
 
                    if($leads_arrayz[$key]['date_mng'] !== '0000-00-00 00:00:00'){
                     $lead_time_mng = new DateTime($leads_array[$key]['date_mng']);
+
                     $date_mng = $lead_time_mng->format("Y-m-d");
                     $time_mng = $lead_time_mng->format("H:i:s");
+                       $date_mng = $leads_arrayz[$key]['date_mng'];
                    }
                    else{
                      $date_mng = '-'; $time_mng = '-';
@@ -388,7 +374,7 @@ if(isset($_GET['dateInterval1']) || isset($_GET['dateInterval2']) || isset($_GET
 
                     echo "<tr>
                     <td class='time_cell'><div class='datetime'>$date</div> <div class='vertical datetime'></div> <div class='datetime'>$time</div></td>
-                    <td class='time_cell'><div class='datetime'>$date_mng</div> <div class='vertical datetime'></div> <div class='datetime'>$time_mng</div></td>
+                    <td class='time_cell'><div class='datetime'>$date_mng</div> <div class='vertical datetime'></div> <div class='datetime'></div></td>
                     <td><a href='https://tema24.amocrm.ru/leads/detail/".$leads_arrayz[$key]['id_lead']."' class='lead_href' target='_blank'>".$leads_arrayz[$key]['id_lead']."</td>
                     <td>".$leads_arrayz[$key]['expert_name']."</td>
                     <td>".$leads_arrayz[$key]['mng_name']."</td>
@@ -398,7 +384,6 @@ if(isset($_GET['dateInterval1']) || isset($_GET['dateInterval2']) || isset($_GET
                     <td class='red'>".$leads_arrayz[$key]['minus']."</td>
                     <td>".$mistakes."</td>
                     </tr>";
-                    $countt += 1;
                 }
 
               ?>
