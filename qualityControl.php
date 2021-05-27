@@ -21,18 +21,22 @@ if(isset($_POST)){
   $prep_date = date("Y-m-d H:i:s");
   switch(@$_POST['action']){
       case 'otvif':{
+//          $prep_card_id = $_POST['data']['card_id'];
+//          $prep_otv_id = $_POST['data']['otv_id'];
+//          $prep_curr_user = $_POST['data']['curr_user'];
           $prep_card_id = $_POST['data']['card_id'];
-          $prep_otv_id = $_POST['data']['otv_id'];
+          $prep_otv_id = $_POST['otv_id'];
           $prep_curr_user = $_POST['data']['curr_user'];
 //          echo $prep_card_id;
-          $bd = $mysqli_req->query("SELECT * FROM leads WHERE id_lead = '$prep_card_id' AND mng_id = '$prep_otv_id'");
-          if ($mysqli_req->query("SELECT * FROM leads WHERE id_lead = '$prep_card_id' AND mng_id = '$prep_otv_id'")) {
-              echo 1;
-              break;
-          }else{
-              echo 0;
-              break;
-          }
+          $bd = $mysqli_req->query("SELECT * FROM leads WHERE id_lead = $_POST[card_id] AND mng_id = $_POST[otv_id]")->fetch_all(MYSQLI_ASSOC);
+          echo json_encode($bd);
+//          if ($bd == 0) {
+//              echo 0;
+//              break;
+//          }else{
+//              echo 1;
+//              break;
+//          }
 
       }
       break;
@@ -49,12 +53,12 @@ if(isset($_POST)){
 //        '$_POST[mng_id]'
             $iduser = $mysqli_req->query("SELECT `mng_id` FROM leads WHERE `mng_id` = '$_POST[mng_id]'");
             if ($iduser) {
-                if ($notice = $mysqli_req->query("SELECT `notice` FROM leads WHERE `id_lead` = '$_POST[card_id]'")) {
+                if ($notice = $mysqli_req->query("SELECT `notice` FROM leads WHERE `id_lead` = '$_POST[card_id]' AND `mng_id` = '$_POST[mng_id]'")) {
                     $nota = 1;
                     $notice_array = $notice->fetch_all(MYSQLI_ASSOC);
-                    @$notice_array = $notice_array[0]['notice'];
+                    @$notice_array = $notice_array[count($notice_array)-1]['notice'];
                 }
-                if ($report = $mysqli_req->query("SELECT `report` FROM leads WHERE `id_lead` = '$_POST[card_id]'")) {
+                if ($report = $mysqli_req->query("SELECT `report` FROM leads WHERE `id_lead` = '$_POST[card_id]' AND `mng_id` = '$_POST[mng_id]'")) {
                     $repa = 1;
                     $report_array = $report->fetch_all(MYSQLI_ASSOC);
                     @$report_array = $report_array[0]['report'];
@@ -68,6 +72,7 @@ if(isset($_POST)){
       $mysqli_req->close();
      };
      break;
+
     case 'insert_warning':{
       $checkbox_name = $_POST['data']['checkbox_name'];
       $checkbox_val = $_POST['data']['checkbox_val'];
@@ -110,11 +115,10 @@ if(isset($_POST)){
           $mysqli_req->close();
 //       }
     };
-//        echo json_encode($res, JSON_UNESCAPED_UNICODE);
     break;
     
     case 'get_filled_fields':{
-      $res = $mysqli_req->query("SELECT * FROM leads WHERE id_lead = '$_POST[card_id]'");
+      $res = $mysqli_req->query("SELECT * FROM leads WHERE id_lead = $_POST[card_id] AND mng_id = $_POST[otv_id]");
       $item = $res->fetch_all(MYSQLI_ASSOC);
       echo json_encode($item, JSON_UNESCAPED_UNICODE);
       $mysqli_req->close();
@@ -134,7 +138,7 @@ if(isset($_POST)){
             $ids = $ids . $item[$i]['id'] . '`';
             }
       }
-      $lead_ids = $mysqli_req->query("SELECT $ids FROM leads WHERE `id_lead` = '$_POST[card_id]'");
+      $lead_ids = $mysqli_req->query("SELECT $ids FROM leads WHERE `id_lead` = '$_POST[card_id]' AND `mng_id` = '$_POST[curr_user]'");
       $lead_ids_array = $lead_ids->fetch_all(MYSQLI_ASSOC);       
       $lead_ids_array = $lead_ids_array[0];
       $key_or = [];
@@ -162,7 +166,7 @@ if(isset($_POST)){
     break;
     
     case 'insert_report':{
-      $res = $mysqli_req->query("UPDATE leads SET `report` = '$_POST[report]', `readed_by_qc` = '0', `date_mng` = '$prep_date' WHERE `id_lead` = '$_POST[card_id]'");
+      $res = $mysqli_req->query("UPDATE leads SET `report` = '$_POST[report]', `readed_by_qc` = '0', `date_mng` = '$prep_date' WHERE `id_lead` = '$_POST[card_id]' AND `mng_id` = '$_POST[mng_id]'");
        $mysqli_req->close();
     };
     break;
@@ -175,7 +179,7 @@ if(isset($_POST)){
     };
     break;
     case 'delete warning':{ // Удалить и в CRM и в БД
-      $mysqli_req->query("DELETE FROM `leads` WHERE `id_lead` = '".$_POST['data']['card_id']."'");
+      $mysqli_req->query("DELETE FROM `leads` WHERE `id_lead` = '".$_POST['data']['card_id']."' AND `mng_id` = '".$_POST['data']['otv_id']."' ");
       $mysqli_req->close();
     };
     break;
